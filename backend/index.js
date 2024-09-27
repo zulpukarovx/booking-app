@@ -30,11 +30,24 @@ app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;    
     
     try {
+        if(!email || !password || !name) {
+            throw new Error("All fields are required");
+        }
+
+        const userAlreadyExists = await UserModel.findOne({email});
+        
+        if(userAlreadyExists) {
+            return res.status(400).json({success: false, message: "User already exists"});
+        }
+
         const userDoc = await UserModel.create({
             name,
             email,
             password: bcrypt.hashSync(password, bcryptSalt),
+            verificationToken,
+            verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000
         });
+
         res.json( userDoc );
     } catch (error) {
         res.status(422).json(error);
@@ -70,13 +83,17 @@ app.get('/profile', (req, res) => {
     if(token) {
         jwt.verify(token, jwtSecret, {}, async (err, userData) => {
             if (err) throw err;
-            const userDoc = await UserModel.findById(userData.id);
-            res.json(userDoc);
+            const {name, email, _id} = await UserModel.findById(userData.id);
+            res.json({name, email, _id});
         })
     } else {
         res.json(null);
     }
 })
+
+app.post('/logout', (req, res) => {
+    res.cookie('token', '').json(true);
+});
 
 app.listen(4000);
 

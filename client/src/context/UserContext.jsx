@@ -4,6 +4,8 @@ export const UserContext = createContext({});
 
 export function UserContextProvider({children}) {
     const [user, setUser] = useState(null);
+    const [ready, setReady] = useState(false);
+    const [redirect, setRedirect] = useState(null);
 
     useEffect(() => {
         if(!user) {
@@ -17,6 +19,7 @@ export function UserContextProvider({children}) {
                 });
                 const data = await response.json();
                 setUser(data);
+                setReady(true);
                 return data;
             }
             fetchUserInfo();
@@ -24,7 +27,7 @@ export function UserContextProvider({children}) {
     }, []);
 
     return (
-        <UserContext.Provider value={{user, setUser}}>
+        <UserContext.Provider value={{user, setUser, ready, redirect, setRedirect}}>
             { children }
         </UserContext.Provider>
     );

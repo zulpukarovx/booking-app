@@ -29,7 +29,6 @@ const LoginPage = () => {
       const data = await response.json();
       setUser(data);
       alert('Login successful');
-      console.log(user)
       setRedirect(true);
       return data;
     } catch (error) {
