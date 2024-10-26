@@ -5,6 +5,9 @@ const jwt = require('jsonwebtoken');
 const { default: mongoose } = require('mongoose');
 const UserModel = require('./models/User');
 const cookieParser = require('cookie-parser');
+const download = require('image-downloader');
+const multer = require('multer');
+
 require('dotenv').config();
 const app = express();
 
@@ -13,6 +16,7 @@ const jwtSecret = 'wrigsapornvajzdmzhduqdlqprimnadf';
 
 app.use(express.json());
 app.use(cookieParser());
+app.use('/uploads', express.static(`${__dirname}/uploads`));
 app.use(cors({
     credentials: true,
     origin: 'http://localhost:5173',
@@ -94,6 +98,25 @@ app.get('/profile', (req, res) => {
 app.post('/logout', (req, res) => {
     res.cookie('token', '').json(true);
 });
+
+app.post('/upload-by-link', async (req, res) => {
+    const {link} = req.body;
+    const newName = 'photo' + Date.now() + '.jpg';
+    try {
+        const newImage = await download.image({
+            url: link,
+            dest: __dirname + '/uploads/' + newName,
+        });
+        res.json( newName );
+    } catch (error) {
+        res.status(422).json(error);
+    }
+});
+
+const photosMiddleware = multer({dest: 'uploads'});
+app.post('/upload', photosMiddleware.array('photos', 10), (req, res) => {
+    res.json(req.files);
+})
 
 app.listen(4000);
 

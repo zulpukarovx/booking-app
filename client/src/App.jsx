@@ -5,12 +5,12 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import { UserContextProvider } from "./context/UserContext";
 import ProfilePage from "./pages/ProfilePage";
-import Bookings from "./pages/Bookings";
-import Places from "./pages/Places";
 import { AccountLayout } from "./Layouts/AccountLayout";
+import MyBookingsPage from "./pages/MyBookingsPage";
+import MyAccomodationsPage from "./pages/MyAccomodationsPage";
+import AddNewHotels from "./pages/AddNewHotels";
 
 function App() {
-
   return (
     <UserContextProvider>
       <Routes>
@@ -20,8 +20,9 @@ function App() {
           <Route path="sign-up" element={<RegisterPage />} />
           <Route path="account" element={<AccountLayout />}>
             <Route index element={<ProfilePage />}/>
-            <Route path="bookings" element={<Bookings />}/>
-            <Route path="places" element={<Places />}/>
+            <Route path="bookings" element={<MyBookingsPage />}/>
+            <Route path="places" element={<MyAccomodationsPage />}/>
+            <Route path="places/add-new-hotels" element={<AddNewHotels />}/>
           </Route>
         </Route>
       </Routes>
